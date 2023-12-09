@@ -53,7 +53,7 @@ def main():
     # free account -- don't worry about API key haha
     newsapi = NewsApiClient(api_key='6c34b8a2b3e94334bb0ce0ce92d24939')
 
-    top_headlines = newsapi.get_top_headlines(sources="the-washington-post", page_size=10)
+    top_headlines = newsapi.get_top_headlines(sources="associated-press", page_size=10)
     top_headlines_list = list(top_headlines.items())[2][1]
 
     top_articles = top_headlines_list[:]
@@ -63,21 +63,29 @@ def main():
 
     other = []
     for article in top_articles:
+        print(article)
         article_text = article['text']
         headline = article['title']
-        cleaned_article1 = extract_from_first_caps(article_text)
-        cleaned_article2 = extract_after_double_newline(article_text)
-        if cleaned_article1:
-            article['clean_text'] = remove_double_spaces(remove_ads(cleaned_article1))
-            article['clean_text_with_headline'] = headline + "\n\n" + article['author'] + "\n\n" + remove_double_spaces(
-                remove_ads(cleaned_article1))
-        elif cleaned_article2:
-            article['clean_text'] = remove_double_spaces(remove_ads(cleaned_article2))
-            article['clean_text_with_headline'] = headline + "\n\n" + article['author'] + "\n\n" + remove_double_spaces(
-                remove_ads(cleaned_article2))
-        else:
-            other.append(article)
-            top_headlines_list.remove(article)
+        author = article['author']
+
+        # AP text cleaning
+        article['clean_text'] = article_text
+        article['clean_text_with_headline'] = headline + "\n\n" + author + "\n\n" + article_text if author else headline + "\n\n" + article_text
+
+        # WaPo text cleaning
+        # cleaned_article1 = extract_from_first_caps(article_text)
+        # cleaned_article2 = extract_after_double_newline(article_text)
+        # if cleaned_article1:
+        #     article['clean_text'] = remove_double_spaces(remove_ads(cleaned_article1))
+        #     article['clean_text_with_headline'] = headline + "\n\n" + article['author'] + "\n\n" + remove_double_spaces(
+        #         remove_ads(cleaned_article1))
+        # elif cleaned_article2:
+        #     article['clean_text'] = remove_double_spaces(remove_ads(cleaned_article2))
+        #     article['clean_text_with_headline'] = headline + "\n\n" + article['author'] + "\n\n" + remove_double_spaces(
+        #         remove_ads(cleaned_article2))
+        # else:
+        #     other.append(article)
+        #     top_headlines_list.remove(article)
 
     return top_articles
 
